@@ -8,7 +8,6 @@ import {
   QBadge
 } from 'quasar'
 
-
 export default Vue.extend({
   name: 'component-api-item',
 

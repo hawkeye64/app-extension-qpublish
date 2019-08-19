@@ -38,7 +38,7 @@ export default Vue.extend({
       type: String,
       default: 'Vue Component'
     },
-    startingTab: String,
+    startingTab: String
   },
 
   data () {
@@ -157,7 +157,7 @@ export default Vue.extend({
           animated: true
         },
         on: {
-          input: v => { this.tab = v}
+          input: v => { this.tab = v }
         }
       }, [
         ...this.headings.map(heading => h(QTabPanel, {
@@ -167,17 +167,17 @@ export default Vue.extend({
             name: heading
           }
         }, [
-            h('div', {
-              staticClass: 'component-api__container'
-            }, [
-              h(ComponentApiList, {
-                props: {
-                  name: heading,
-                  json: this.json[heading]
-                }
-              })
-            ])
-          ]
+          h('div', {
+            staticClass: 'component-api__container'
+          }, [
+            h(ComponentApiList, {
+              props: {
+                name: heading,
+                json: this.json[heading]
+              }
+            })
+          ])
+        ]
         ))
       ])
     },

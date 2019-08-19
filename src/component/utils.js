@@ -1,4 +1,4 @@
-export function copyHeading (id, message='Anchor has been copied to clipboard.', color='white', textColor='primary', icon='done', position='top', timeout=2000) {
+export function copyHeading (id, message = 'Anchor has been copied to clipboard.', color = 'white', textColor = 'primary', icon = 'done', position = 'top', timeout = 2000) {
   const text = window.location.origin + window.location.pathname + '#' + id
 
   var textArea = document.createElement('textarea')

@@ -36,7 +36,6 @@ export default Vue.extend({
 
   methods: {
 
-
     __render (h) {
       return h(QList, {
         staticClass: 'component-api__list',

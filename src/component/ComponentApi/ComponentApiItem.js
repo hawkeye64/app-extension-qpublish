@@ -88,6 +88,22 @@ export default Vue.extend({
       ])
     },
 
+    __renderApplicable (h) {
+      if (this.json.applicable === void 0) return ''
+      return h('div', {
+        staticClass: 'component-api__row--item col-xs-12 col-sm-4'
+      }, [
+        h('div', {
+          staticClass: 'component-api__row--label'
+        }, 'Applicable'),
+        h('div', {
+          staticClass: 'component-api__row--value'
+        }, [
+          h('div', this.json.applicable.join(', '))
+        ])
+      ])
+    },
+
     __renderDefault (h) {
       if (this.json.default === void 0) return ''
       return h('div', {
@@ -145,6 +161,8 @@ export default Vue.extend({
         this.__renderType(h),
         this.__renderRequired(h),
         this.__renderDefault(h),
+        this.__renderApplicable(h),
+
         this.__renderDesc(h),
         this.__renderValues(h),
         this.__renderExamples(h)

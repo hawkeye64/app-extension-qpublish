@@ -4,9 +4,7 @@ import Vue from 'vue'
 import './ComponentApi.styl'
 
 // Utils
-// import { copyHeading, slugify } from '../utils.js'
 import { slugify } from '../utils.js'
-// import QRibbon from '@quasar/quasar-app-extension-qribbon'
 import ComponentApiList from './ComponentApiList'
 import {
   QCard,
@@ -15,7 +13,7 @@ import {
   QTabPanels,
   QTabPanel,
   QToolbar,
-  QToolbarTitle ,
+  QToolbarTitle,
   QSpace,
   QSeparator
 } from 'quasar'
@@ -64,7 +62,6 @@ export default Vue.extend({
   },
 
   methods: {
-    // copyHeading,
 
     copyHeading (id) {
       const text = window.location.origin + window.location.pathname + '#' + id
@@ -212,18 +209,8 @@ export default Vue.extend({
       ])
     },
 
-    __renderTitle (h) {
-      return h('h1', {
-        domProps: {
-          id: this.slugifiedTitle + '%20API'
-        },
-        staticClass: 'q-markdown--heading-h1'
-      }, this.title + ' API')
-    },
-
     __render (h) {
       return h('div', [
-        this.__renderTitle(h),
         this.__renderSection(h)
       ])
     }

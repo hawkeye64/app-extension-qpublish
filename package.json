@@ -1,6 +1,6 @@
 {
   "name": "@quasar/quasar-app-extension-qpublish",
-  "version": "1.0.0-alpha.1",
+  "version": "1.0.0-alpha.2",
   "description": "Create a static website with Markdown and Quasar",
   "author": "Jeff Galbraith <jeff@quasar.dev>",
   "license": "MIT",

@@ -24,14 +24,28 @@ export default Vue.extend({
 
   methods: {
 
-    __renderExamples (h) {
-      if (this.json.examples === void 0 || this.json.examples.length <= 0) return ''
-      h('div', {
+    __renderValues (h) {
+      if (this.json.values === void 0 || this.json.values.length <= 0) return ''
+      return h('div', {
         staticClass: 'component-api__row--item col-xs-12 col-sm-12'
       }, [
         h('div', {
           staticClass: 'component-api__row--label'
-        }, 'Example' + this.json.examples.length > 1 ? 's' : ''),
+        }, 'Value' + (this.json.values.length > 1 ? 's' : '')),
+        h('div', {
+          staticClass: 'component-api__row--values'
+        }, this.json.values.join(', '))
+      ])
+    },
+
+    __renderExamples (h) {
+      if (this.json.examples === void 0 || this.json.examples.length <= 0) return ''
+      return h('div', {
+        staticClass: 'component-api__row--item col-xs-12 col-sm-12'
+      }, [
+        h('div', {
+          staticClass: 'component-api__row--label'
+        }, 'Example' + (this.json.examples.length > 1 ? 's' : '')),
         h('div', {
           staticClass: 'component-api__row--value'
         }, [
@@ -132,6 +146,7 @@ export default Vue.extend({
         this.__renderRequired(h),
         this.__renderDefault(h),
         this.__renderDesc(h),
+        this.__renderValues(h),
         this.__renderExamples(h)
       ])
     }

@@ -69,7 +69,7 @@ export default Vue.extend({
     __renderDefinitions (h, json) {
       if (json.definition === void 0) return ''
       const keys = Object.keys(json.definition)
-      return keys.map(key => h('div', {
+      return h('div', {
         staticClass: 'component-api__row--item col-xs-12 col-sm-12'
       }, [
         h('div', {
@@ -78,9 +78,9 @@ export default Vue.extend({
         h('div', {
           // staticClass: 'component-api__row component-api__row--bordered row'
         }, [
-          this.__renderSubitem(h, key, json.definition[key])
+          keys.map(key => this.__renderSubitem(h, key, json.definition[key]))
         ])
-      ]))
+      ])
     },
 
     __renderValues (h, json) {
@@ -202,7 +202,6 @@ export default Vue.extend({
 
     __renderType (h, json) {
       if (json.type === void 0) return ''
-      console.log('TYPE:', json.type)
       const type = Array.isArray(json.type) ? json.type.join(' | ') : json.type
       return h('div', {
         staticClass: 'component-api__row--item col-xs-12 col-sm-4'

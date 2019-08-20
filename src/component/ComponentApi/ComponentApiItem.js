@@ -31,13 +31,15 @@ export default Vue.extend({
         this.__renderName(h, name, 'bg-blue-grey-4'),
         this.__renderType(h, item),
         this.__renderRequired(h, item),
+        this.__renderSync(h, item),
         this.__renderDefault(h, item),
         this.__renderApplicable(h, item),
 
         this.__renderDesc(h, item),
         this.__renderValues(h, item),
         this.__renderExamples(h, item),
-        this.__renderParams(h, item)
+        this.__renderParams(h, item),
+        this.__renderDefinitions(h, item)
       ])
     },
 
@@ -55,13 +57,30 @@ export default Vue.extend({
       }, [
         h('div', {
           staticClass: 'component-api__row--label'
-        }, 'Parameter' + (json.params.length > 1 ? 's' : '')),
+        }, 'Parameter' + (Object.keys(json.params).length > 1 ? 's' : '')),
         h('div', {
           // staticClass: 'component-api__row component-api__row--bordered row'
         }, [
           ...this.__renderSubitems(h, json.params)
         ])
       ])
+    },
+
+    __renderDefinitions (h, json) {
+      if (json.definition === void 0) return ''
+      const keys = Object.keys(json.definition)
+      return keys.map(key => h('div', {
+        staticClass: 'component-api__row--item col-xs-12 col-sm-12'
+      }, [
+        h('div', {
+          staticClass: 'component-api__row--label'
+        }, 'Definition' + (Object.keys(json.definition).length > 1 ? 's' : '')),
+        h('div', {
+          // staticClass: 'component-api__row component-api__row--bordered row'
+        }, [
+          this.__renderSubitem(h, key, json.definition[key])
+        ])
+      ]))
     },
 
     __renderValues (h, json) {
@@ -78,6 +97,13 @@ export default Vue.extend({
       ])
     },
 
+    __renderExample (h, example) {
+      const json = '```js\n' + example + '\n```'
+      return h('q-markdown', {
+        staticClass: 'component-api__row--example'
+      }, json)
+    },
+
     __renderExamples (h, json) {
       if (json.examples === void 0 || json.examples.length <= 0) return ''
       return h('div', {
@@ -89,9 +115,7 @@ export default Vue.extend({
         h('div', {
           staticClass: 'component-api__row--value'
         }, [
-          json.examples.map((example, index) => h('div', {
-            staticClass: 'component-api__row--example'
-          }, example))
+          json.examples.map((example, index) => this.__renderExample(h, example))
         ])
       ])
     },
@@ -108,6 +132,22 @@ export default Vue.extend({
           staticClass: 'component-api__row--value'
         }, [
           h('q-markdown', json.desc)
+        ])
+      ])
+    },
+
+    __renderSync (h, json) {
+      if (json.sync === void 0) return ''
+      return h('div', {
+        staticClass: 'component-api__row--item col-xs-12 col-sm-4'
+      }, [
+        h('div', {
+          staticClass: 'component-api__row--label'
+        }, 'Sync'),
+        h('div', {
+          staticClass: 'component-api__row--value'
+        }, [
+          h('div', json.sync)
         ])
       ])
     },
@@ -202,13 +242,15 @@ export default Vue.extend({
         this.__renderName(h, this.name, 'bg-orange'),
         this.__renderType(h, this.json),
         this.__renderRequired(h, this.json),
+        this.__renderSync(h, this.json),
         this.__renderDefault(h, this.json),
         this.__renderApplicable(h, this.json),
 
         this.__renderDesc(h, this.json),
         this.__renderValues(h, this.json),
         this.__renderExamples(h, this.json),
-        this.__renderParams(h, this.json)
+        this.__renderParams(h, this.json),
+        this.__renderDefinitions(h, this.json)
       ])
     }
   },

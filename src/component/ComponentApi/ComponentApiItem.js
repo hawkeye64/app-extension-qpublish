@@ -43,15 +43,9 @@ export default Vue.extend({
       ])
     },
 
-    __renderSubitems (h, subitem) {
-      const keys = Object.keys(subitem)
-      return keys.map(key => [
-        this.__renderSubitem(h, key, subitem[key])
-      ])
-    },
-
     __renderParams (h, json) {
       if (json.params === void 0) return ''
+      const keys = Object.keys(json.params)
       return h('div', {
         staticClass: 'component-api__row--item col-xs-12 col-sm-12'
       }, [
@@ -59,9 +53,8 @@ export default Vue.extend({
           staticClass: 'component-api__row--label'
         }, 'Parameter' + (Object.keys(json.params).length > 1 ? 's' : '')),
         h('div', {
-          // staticClass: 'component-api__row component-api__row--bordered row'
         }, [
-          ...this.__renderSubitems(h, json.params)
+          keys.map(key => this.__renderSubitem(h, key, json.params[key]))
         ])
       ])
     },
@@ -76,7 +69,6 @@ export default Vue.extend({
           staticClass: 'component-api__row--label'
         }, 'Definition' + (Object.keys(json.definition).length > 1 ? 's' : '')),
         h('div', {
-          // staticClass: 'component-api__row component-api__row--bordered row'
         }, [
           keys.map(key => this.__renderSubitem(h, key, json.definition[key]))
         ])

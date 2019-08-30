@@ -133,7 +133,7 @@ export default Vue.extend({
           dense: true,
           activeColor: 'primary',
           indicatorColor: 'primary',
-          align: 'justify',
+          align: 'left',
           narrowIndicator: true
         },
         on: {

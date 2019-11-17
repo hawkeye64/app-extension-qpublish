@@ -1,8 +1,3 @@
-import Vue from 'vue'
-
-// Styles
-import './ComponentApi.styl'
-
 // Utils
 import ComponentApiItem from './ComponentApiItem'
 import {
@@ -10,8 +5,8 @@ import {
   QList
 } from 'quasar'
 
-export default Vue.extend({
-  name: 'component-api-list',
+export default {
+  name: 'ComponentApiList',
 
   props: {
     name: {
@@ -60,4 +55,4 @@ export default Vue.extend({
   render (h) {
     return this.__render(h)
   }
-})
+}

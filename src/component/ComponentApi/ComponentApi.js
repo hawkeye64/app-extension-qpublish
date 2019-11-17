@@ -1,12 +1,12 @@
 import Vue from 'vue'
 
-// Styles
-import './ComponentApi.styl'
+// Mixins
+import ComponentMixin from './ComponentMixin'
 
 // Utils
-import { slugify } from '../utils.js'
 import ComponentApiList from './ComponentApiList'
 import {
+  QBadge,
   QCard,
   QTabs,
   QTab,
@@ -19,7 +19,9 @@ import {
 } from 'quasar'
 
 export default Vue.extend({
-  name: 'component-api',
+  name: 'ComponentApi',
+
+  mixins: [ComponentMixin],
 
   components: {
     ComponentApiList: () => import('./ComponentApiList')
@@ -43,53 +45,88 @@ export default Vue.extend({
 
   data () {
     return {
-      tab: 'props'
+      ready: false,
+      currentTab: 'props',
+      currentInnerTab: 'model',
+      api: void 0,
+      filteredApi: void 0,
+      tabs: [],
+      innerTabs: {},
+      tabCount: {},
+      innerTabCount: {},
+      innerTabContent: {}
     }
   },
 
   mounted () {
-    this.tab = this.startingTab || this.tab
+    this.currentTab = this.startingTab || this.currentTab
+    this.__parseJson(this.json)
   },
 
   computed: {
     slugifiedTitle () {
-      return slugify(this.title)
+      return this.slugify(this.title)
     },
 
     headings () {
-      return Object.keys(this.json).filter(k => k !== 'type')
+      // return Object.keys(this.json).filter(k => k !== 'type')
+      return this.tabs
+    },
+
+    currentTabMaxCategoryPropCount () {
+      if (this.aggregationModel[this.currentTab]) {
+        let max = -1
+        for (let category in this.filteredApi[this.currentTab]) {
+          let count = this.apiInnerCount(this.currentTab, category)
+          if (count > max) {
+            max = count
+          }
+        }
+        return max
+      }
+
+      return 0
     }
   },
 
   methods: {
+    __parseJson ({ ...api }) {
+      if (api === void 0) {
+        // no api
+        this.ready = true
+        return
+      }
 
-    copyHeading (id) {
-      const text = window.location.origin + window.location.pathname + '#' + id
+      if (api.type !== void 0) {
+        delete api.type
+      }
 
-      var textArea = document.createElement('textarea')
-      textArea.className = 'fixed-top'
-      textArea.value = text
-      document.body.appendChild(textArea)
-      textArea.focus()
-      textArea.select()
+      // get a count of items within each top-level tab menu
+      for (let propKey of Object.keys(api)) {
+        this.$set(this.tabs, propKey, Object.keys(api[propKey]).length)
+      }
 
-      document.execCommand('copy')
-      document.body.removeChild(textArea)
+      if (api.props !== void 0) {
+        for (let propKey of Object.keys(api.props)) {
+          const props = api.props[propKey]
+          if (this.innerTabContent[props.category] === void 0) {
+            this.$set(this.innerTabContent, props.category, {})
+          }
+          this.$set(this.innerTabContent[props.category], propKey, { ...props })
+        }
 
-      this.$q.notify({
-        message: 'Anchor has been copied to clipboard.',
-        color: 'white',
-        textColor: 'primary',
-        icon: 'done',
-        position: 'top',
-        timeout: 2000
-      })
+        this.$set(this, 'innerTabCount', {})
+        for (let propKey of Object.keys(this.innerTabContent)) {
+          this.$set(this.innerTabCount, propKey, Object.keys(this.innerTabContent[propKey]).length)
+        }
+      }
+
+      this.ready = true
     },
 
     __renderToolbarTitle (h) {
       return h(QToolbarTitle, {
         staticClass: 'example-title',
-        style: 'padding: 5px 20px;',
         on: {
           click: e => { this.copyHeading(this.slugifiedTitle) }
         }
@@ -127,9 +164,9 @@ export default Vue.extend({
 
     __renderTabs (h) {
       return h(QTabs, {
-        staticClass: 'text-grey',
+        staticClass: 'bg-grey-2 text-grey-7 text-caption',
         props: {
-          value: this.tab,
+          value: this.currentTab,
           dense: true,
           activeColor: 'primary',
           indicatorColor: 'primary',
@@ -137,48 +174,64 @@ export default Vue.extend({
           narrowIndicator: true
         },
         on: {
-          input: v => { this.tab = v }
+          input: v => { this.currentTab = v }
         }
       }, [
-        ...this.headings.map(heading => h(QTab, {
-          key: heading + '-tab',
+        ...Object.keys(this.tabs).map(propKey => h(QTab, {
+          key: propKey + '-tab',
           props: {
-            name: heading,
-            label: heading
+            name: propKey
+          },
+          scopedSlots: {
+            default: () => this.__renderTabSlot(h, propKey, this.tabs[propKey])
           }
         }))
+      ])
+    },
+
+    __renderTabSlot (h, label, count) {
+      return h('div', {
+        staticClass: 'row no-wrap items-center'
+      }, [
+        h('span', {
+          staticClass: 'q-mr-xs text-uppercase text-weight-medium'
+        }, label),
+        h(QBadge, [ count ])
       ])
     },
 
     __renderTabPanels (h) {
       return h(QTabPanels, {
         props: {
-          value: this.tab,
+          value: this.currentTab,
           animated: true
         },
         on: {
-          input: v => { this.tab = v }
+          input: v => { this.currentTab = v }
         }
       }, [
-        ...this.headings.map(heading => h(QTabPanel, {
-          key: heading + '-panel',
+        ...Object.keys(this.tabs).map(propKey => h(QTabPanel, {
+          key: propKey + '-panel',
           staticClass: 'q-pa-none',
           props: {
-            name: heading
+            name: propKey
           }
         }, [
-          h('div', {
-            staticClass: 'component-api__container'
-          }, [
-            h(ComponentApiList, {
-              props: {
-                name: heading,
-                json: this.json[heading]
-              }
-            })
-          ])
-        ]
-        ))
+          this.__renderApiList(h, propKey, this.json[propKey])
+        ]))
+      ])
+    },
+
+    __renderApiList (h, name, api) {
+      return h('div', {
+        staticClass: 'component-api__container'
+      }, [
+        h(ComponentApiList, {
+          props: {
+            name: name,
+            json: api
+          }
+        })
       ])
     },
 
@@ -217,6 +270,9 @@ export default Vue.extend({
   },
 
   render (h) {
-    return this.__render(h)
+    if (this.ready === true) {
+      return this.__render(h)
+    }
+    return void 0
   }
 })

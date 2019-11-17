@@ -1,15 +1,12 @@
 import Vue from 'vue'
 
-// Styles
-import './ComponentApi.styl'
-
 // Utils
 import {
   QBadge
 } from 'quasar'
 
 export default Vue.extend({
-  name: 'component-api-item',
+  name: 'ComponentApiItem',
 
   props: {
     name: {
@@ -230,7 +227,7 @@ export default Vue.extend({
       return h('div', {
         staticClass: 'row full-width'
       }, [
-        this.__renderName(h, this.name, 'bg-orange'),
+        this.__renderName(h, this.name, 'bg-orange-8'),
         this.__renderType(h, this.json),
         this.__renderRequired(h, this.json),
         this.__renderSync(h, this.json),

@@ -99,7 +99,7 @@ export default Vue.extend({
     __renderValues (h, json) {
       if (json.values === void 0 || json.values.length <= 0) return ''
       return h('div', {
-        staticClass: 'component-api__row--item'
+        staticClass: 'component-api__row--item col-auto'
       }, [
         h('div', {
           staticClass: 'component-api__row--label'
@@ -120,7 +120,7 @@ export default Vue.extend({
     __renderExamples (h, json) {
       if (json.examples === void 0 || json.examples.length <= 0) return ''
       return h('div', {
-        staticClass: 'component-api__row--item'
+        staticClass: 'component-api__row--item col-auto'
       }, [
         h('div', {
           staticClass: 'component-api__row--label'

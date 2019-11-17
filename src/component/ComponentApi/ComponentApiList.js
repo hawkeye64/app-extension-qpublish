@@ -39,7 +39,8 @@ export default {
         }
       }, [
         ...this.headings.map(heading => h(QItem, {
-          key: this.name + '-' + heading
+          key: this.name + '-' + heading,
+          staticClass: 'component-api__list-item'
         }, [
           h(ComponentApiItem, {
             props: {

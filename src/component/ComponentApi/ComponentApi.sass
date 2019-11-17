@@ -6,6 +6,9 @@
     max-height: 600px
     min-height: 600px
 
+    &-item
+      border-top: 1px solid lightblue !important
+
   &__row
     padding: 8px 16px 4px
     font-weight: 300
@@ -13,7 +16,7 @@
 
     &--bordered
       border-radius: 5px
-      border: 1px solid #eee!important
+      border: lightblue 1px solid
       padding: 4px 8px 4px 16px
 
     &--item
@@ -38,11 +41,11 @@
       font-weight: 400
       color: #000
       padding-left: 16px
+      display: inline-block
 
 .property-name
   font-size: 14px
   line-height: 14px
-
 
 .component-api__row.component-api__row--bordered.row + .component-api__row.component-api__row--bordered.row
   margin-top: 4px

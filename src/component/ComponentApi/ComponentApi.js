@@ -54,7 +54,9 @@ export default Vue.extend({
       innerTabs: {},
       tabCount: {},
       innerTabCount: {},
-      innerTabContent: {}
+      innerTabContent: {},
+      borderColor: 'lightblue',
+      separatorColor: 'light-blue-2'
     }
   },
 
@@ -69,23 +71,7 @@ export default Vue.extend({
     },
 
     headings () {
-      // return Object.keys(this.json).filter(k => k !== 'type')
       return this.tabs
-    },
-
-    currentTabMaxCategoryPropCount () {
-      if (this.aggregationModel[this.currentTab]) {
-        let max = -1
-        for (let category in this.filteredApi[this.currentTab]) {
-          let count = this.apiInnerCount(this.currentTab, category)
-          if (count > max) {
-            max = count
-          }
-        }
-        return max
-      }
-
-      return 0
     }
   },
 
@@ -120,6 +106,8 @@ export default Vue.extend({
           this.$set(this.innerTabCount, propKey, Object.keys(this.innerTabContent[propKey]).length)
         }
       }
+
+      this.filteredApi = api
 
       this.ready = true
     },
@@ -189,13 +177,19 @@ export default Vue.extend({
       ])
     },
 
-    __renderTabSlot (h, label, count) {
+    __renderTabSlot (h, label, count, stretch) {
       return h('div', {
-        staticClass: 'row no-wrap items-center'
+        staticClass: 'row no-wrap items-center self-stretch q-pa-xs',
+        style: {
+          minWidth: stretch === true ? '120px' : void 0
+        }
       }, [
         h('span', {
           staticClass: 'q-mr-xs text-uppercase text-weight-medium'
         }, label),
+        h('div', {
+          staticClass: 'col'
+        }),
         h(QBadge, [ count ])
       ])
     },
@@ -210,16 +204,21 @@ export default Vue.extend({
           input: v => { this.currentTab = v }
         }
       }, [
-        ...Object.keys(this.tabs).map(propKey => h(QTabPanel, {
-          key: propKey + '-panel',
-          staticClass: 'q-pa-none',
-          props: {
-            name: propKey
-          }
-        }, [
-          this.__renderApiList(h, propKey, this.json[propKey])
-        ]))
+        this.__renderTabPanel(h)
       ])
+    },
+
+    __renderTabPanel (h) {
+      return [ ...Object.keys(this.tabs).map(propKey => h(QTabPanel, {
+        key: propKey + '-panel',
+        staticClass: 'q-pa-none',
+        props: {
+          name: propKey
+        }
+      }, [
+        propKey === 'props' && this.__renderInnerTabs(h, propKey, this.filteredApi[propKey]),
+        propKey !== 'props' && this.__renderApiList(h, propKey, this.filteredApi[propKey])
+      ]))]
     },
 
     __renderApiList (h, name, api) {
@@ -235,18 +234,106 @@ export default Vue.extend({
       ])
     },
 
+    __renderInnerTabs (h, name, api) {
+      return h('div', {
+        staticClass: 'fit row'
+      }, [
+        h('div', {
+          staticClass: 'col-auto row no-wrap bg-grey-2 text-grey-7 q-py-lg'
+        }, [
+          h(QTabs, {
+            staticClass: 'bg-grey-2 text-grey-7 text-caption',
+            props: {
+              value: this.currentInnerTab,
+              dense: true,
+              vertical: true,
+              activeColor: 'primary',
+              indicatorColor: 'primary',
+              align: 'left',
+              narrowIndicator: true
+            },
+            on: {
+              input: v => { this.currentInnerTab = v }
+            }
+          }, [
+            ...Object.keys(this.innerTabCount).map(propKey => h(QTab, {
+              key: propKey + '-inner-tab',
+              staticClass: 'col-shrink',
+              props: {
+                name: propKey
+              },
+              scopedSlots: {
+                default: () => this.__renderTabSlot(h, propKey, this.innerTabCount[propKey], true)
+              }
+            }))
+          ])
+        ]),
+        h(QSeparator, {
+          props: {
+            vertical: true,
+            color: this.separatorColor
+          },
+          style: {
+            minHeight: '600px'
+          }
+        }),
+        this.__renderInnerTabPanels(h)
+      ])
+    },
+
+    __renderInnerTabPanels (h) {
+      return h(QTabPanels, {
+        staticClass: 'col',
+        props: {
+          value: this.currentInnerTab,
+          animated: true,
+          transitionPrev: 'slide-down',
+          transitionNext: 'slide-up'
+
+        },
+        on: {
+          input: v => { this.currentInnerTab = v }
+        }
+      }, [
+        this.__renderInnerTabPanel(h)
+      ])
+    },
+
+    __renderInnerTabPanel (h) {
+      return [ ...Object.keys(this.innerTabContent).map(propKey => h(QTabPanel, {
+        key: propKey + '-inner-panel',
+        staticClass: 'q-pa-none',
+        props: {
+          name: propKey
+        }
+      }, [
+        this.__renderApiList(h, propKey, this.innerTabContent[propKey])
+      ]))]
+    },
+
     __renderCard (h) {
       return h(QCard, {
         staticClass: 'no-shadow',
         props: {
           flat: true,
           bordered: true
+        },
+        style: {
+          border: `${this.borderColor} 1px solid`
         }
       }, [
         this.__renderToolbar(h),
-        h(QSeparator),
+        h(QSeparator, {
+          props: {
+            color: this.separatorColor
+          }
+        }),
         this.__renderTabs(h),
-        h(QSeparator),
+        h(QSeparator, {
+          props: {
+            color: this.separatorColor
+          }
+        }),
         this.__renderTabPanels(h)
       ])
     },

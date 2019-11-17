@@ -5,6 +5,13 @@ import {
   QBadge
 } from 'quasar'
 
+const NAME_PROP_COLOR = [
+  'bg-orange-8',
+  'bg-accent',
+  'bg-secondary',
+  'bg-warning'
+]
+
 export default Vue.extend({
   name: 'ComponentApiItem',
 
@@ -21,11 +28,11 @@ export default Vue.extend({
 
   methods: {
 
-    __renderSubitem (h, name, item) {
+    __renderSubitem (h, name, item, level = 0) {
       return h('div', {
         staticClass: 'component-api__row component-api__row--bordered row'
       }, [
-        this.__renderName(h, name, 'bg-blue-grey-4'),
+        this.__renderName(h, name, NAME_PROP_COLOR[level]),
         this.__renderType(h, item),
         this.__renderRequired(h, item),
         this.__renderSync(h, item),
@@ -35,39 +42,56 @@ export default Vue.extend({
         this.__renderDesc(h, item),
         this.__renderValues(h, item),
         this.__renderExamples(h, item),
-        this.__renderParams(h, item),
-        this.__renderDefinitions(h, item)
+        this.__renderParams(h, item, level + 1),
+        this.__renderDefinitions(h, item, level + 1),
+        this.__renderScope(h, item, level + 1)
       ])
     },
 
-    __renderParams (h, json) {
+    __renderParams (h, json, level = 0) {
       if (json.params === void 0) return ''
       const keys = Object.keys(json.params)
       return h('div', {
-        staticClass: 'component-api__row--item col-xs-12 col-sm-12'
+        staticClass: 'component-api__row--item full-width'
       }, [
         h('div', {
           staticClass: 'component-api__row--label'
         }, 'Parameter' + (Object.keys(json.params).length > 1 ? 's' : '')),
         h('div', {
         }, [
-          keys.map(key => this.__renderSubitem(h, key, json.params[key]))
+          keys.map(key => this.__renderSubitem(h, key, json.params[key], level))
         ])
       ])
     },
 
-    __renderDefinitions (h, json) {
+    __renderDefinitions (h, json, level = 0) {
       if (json.definition === void 0) return ''
       const keys = Object.keys(json.definition)
       return h('div', {
-        staticClass: 'component-api__row--item col-xs-12 col-sm-12'
+        staticClass: 'component-api__row--item full-width'
       }, [
         h('div', {
           staticClass: 'component-api__row--label'
         }, 'Definition' + (Object.keys(json.definition).length > 1 ? 's' : '')),
         h('div', {
         }, [
-          keys.map(key => this.__renderSubitem(h, key, json.definition[key]))
+          keys.map(key => this.__renderSubitem(h, key, json.definition[key], level))
+        ])
+      ])
+    },
+
+    __renderScope (h, json, level = 0) {
+      if (json.scope === void 0) return ''
+      const keys = Object.keys(json.scope)
+      return h('div', {
+        staticClass: 'component-api__row--item full-width'
+      }, [
+        h('div', {
+          staticClass: 'component-api__row--label'
+        }, 'Scope' + (Object.keys(json.scope).length > 1 ? 's' : '')),
+        h('div', {
+        }, [
+          keys.map(key => this.__renderSubitem(h, key, json.scope[key], level))
         ])
       ])
     },
@@ -75,7 +99,7 @@ export default Vue.extend({
     __renderValues (h, json) {
       if (json.values === void 0 || json.values.length <= 0) return ''
       return h('div', {
-        staticClass: 'component-api__row--item col-xs-12 col-sm-12'
+        staticClass: 'component-api__row--item'
       }, [
         h('div', {
           staticClass: 'component-api__row--label'
@@ -96,7 +120,7 @@ export default Vue.extend({
     __renderExamples (h, json) {
       if (json.examples === void 0 || json.examples.length <= 0) return ''
       return h('div', {
-        staticClass: 'component-api__row--item col-xs-12 col-sm-12'
+        staticClass: 'component-api__row--item'
       }, [
         h('div', {
           staticClass: 'component-api__row--label'
@@ -112,7 +136,7 @@ export default Vue.extend({
     __renderDesc (h, json) {
       if (json.desc === void 0) return ''
       return h('div', {
-        staticClass: 'component-api__row--item col-xs-12 col-sm-12'
+        staticClass: 'component-api__row--item full-width'
       }, [
         h('div', {
           staticClass: 'component-api__row--label'
@@ -224,10 +248,11 @@ export default Vue.extend({
     },
 
     __render (h) {
+      const level = 0
       return h('div', {
         staticClass: 'row full-width'
       }, [
-        this.__renderName(h, this.name, 'bg-orange-8'),
+        this.__renderName(h, this.name, NAME_PROP_COLOR[level]),
         this.__renderType(h, this.json),
         this.__renderRequired(h, this.json),
         this.__renderSync(h, this.json),
@@ -237,8 +262,9 @@ export default Vue.extend({
         this.__renderDesc(h, this.json),
         this.__renderValues(h, this.json),
         this.__renderExamples(h, this.json),
-        this.__renderParams(h, this.json),
-        this.__renderDefinitions(h, this.json)
+        this.__renderParams(h, this.json, level + 1),
+        this.__renderDefinitions(h, this.json, level + 1),
+        this.__renderScope(h, this.json, level + 1)
       ])
     }
   },

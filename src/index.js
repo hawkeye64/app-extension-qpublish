@@ -13,12 +13,13 @@ const extendQuasarConf = function (conf) {
   // make sure boot & component files transpile
   conf.build.transpileDependencies.push(/quasar-app-extension-qpublish[\\/]src/)
 
-  conf.css.push('~@quasar/quasar-app-extension-qpublish/src/component/ComponentApi/ComponentApi.styl')
-  console.log(` App Extension (qpublish) Info: 'Adding stylus css reference to your quasar.conf.js'`)
+  conf.css.push('~@quasar/quasar-app-extension-qpublish/src/component/ComponentApi/ComponentApi.sass')
+  console.log(` App Extension (qpublish) Info: 'Adding sass css reference to your quasar.conf.js'`)
 }
 
 module.exports = function (api) {
-  api.compatibleWith('@quasar/app', '^1.0.0')
+  api.compatibleWith('quasar', '^1.1.1')
+  api.compatibleWith('@quasar/app', '^1.1.4')
 
   // register JSON api
   // api.registerDescribeApi('QFlashcard', '../component/QFlashcard.json')

@@ -34,6 +34,7 @@ export default Vue.extend({
       }, [
         this.__renderName(h, name, NAME_PROP_COLOR[level]),
         this.__renderType(h, item),
+        this.__renderAddedIn(h, item),
         this.__renderRequired(h, item),
         this.__renderSync(h, item),
         this.__renderDefault(h, item),
@@ -213,6 +214,23 @@ export default Vue.extend({
       ])
     },
 
+    __renderAddedIn (h, json) {
+      if (json.addedIn === void 0) return ''
+      return h('div', {
+        staticClass: 'component-api__row--item col-xs-12 col-sm-4'
+      }, [
+        h('div', {
+          staticClass: 'component-api__row--label'
+        }, 'Added in'),
+        h('div', {
+          staticClass: 'component-api__row--value'
+        }, [
+          h('div', json.addedIn)
+        ])
+      ])
+
+    },
+
     __renderType (h, json) {
       if (json.type === void 0) return ''
       const type = Array.isArray(json.type) ? json.type.join(' | ') : json.type
@@ -254,6 +272,7 @@ export default Vue.extend({
       }, [
         this.__renderName(h, this.name, NAME_PROP_COLOR[level]),
         this.__renderType(h, this.json),
+        this.__renderAddedIn(h, item),
         this.__renderRequired(h, this.json),
         this.__renderSync(h, this.json),
         this.__renderDefault(h, this.json),

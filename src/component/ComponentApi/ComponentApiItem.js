@@ -272,7 +272,7 @@ export default Vue.extend({
       }, [
         this.__renderName(h, this.name, NAME_PROP_COLOR[level]),
         this.__renderType(h, this.json),
-        this.__renderAddedIn(h, item),
+        this.__renderAddedIn(h, this.json),
         this.__renderRequired(h, this.json),
         this.__renderSync(h, this.json),
         this.__renderDefault(h, this.json),

@@ -30,7 +30,6 @@ export default {
   },
 
   methods: {
-
     __render (h) {
       return h(QList, {
         staticClass: 'component-api__list',
@@ -45,6 +44,7 @@ export default {
           h(ComponentApiItem, {
             props: {
               name: heading,
+              type: this.name,
               json: this.json[heading]
             }
           })

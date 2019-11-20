@@ -20,6 +20,10 @@ export default Vue.extend({
       type: String,
       required: true
     },
+    type: {
+      type: String,
+      default: 'props'
+    },
     json: {
       type: Object,
       required: true
@@ -27,25 +31,62 @@ export default Vue.extend({
   },
 
   methods: {
+    getMethodName (title, json) {
+      let name
 
-    __renderSubitem (h, name, item, level = 0) {
+      name = ' ['
+
+      if (json.returns) {
+        name += json.returns.type
+      } else {
+        name += 'void 0'
+      }
+
+      name += '] '
+
+      if (json.params === void 0) {
+        name += title + ' ()'
+      } else {
+        name += title + ' (' + Object.keys(json.params).join(', ') + ')'
+      }
+
+      return name
+    },
+
+    getEventName () {
+      let name = '@' + this.name + ' => function'
+
+      if (this.json.params === void 0) {
+        return name + ' ()'
+      }
+
+      name += ' (' + Object.keys(this.json.params).join(', ') + ')'
+
+      return name
+    },
+
+    __renderSubitem (h, name, json, level = 0) {
+      if (json.type === 'Function') {
+        name = this.getMethodName(name, json)
+      }
       return h('div', {
         staticClass: 'component-api__row component-api__row--bordered row'
       }, [
         this.__renderName(h, name, NAME_PROP_COLOR[level]),
-        this.__renderType(h, item),
-        this.__renderAddedIn(h, item),
-        this.__renderRequired(h, item),
-        this.__renderSync(h, item),
-        this.__renderDefault(h, item),
-        this.__renderApplicable(h, item),
+        this.__renderType(h, json),
+        this.__renderAddedIn(h, json),
+        this.__renderRequired(h, json),
+        this.__renderSync(h, json),
+        this.__renderDefault(h, json),
+        this.__renderApplicable(h, json),
 
-        this.__renderDesc(h, item),
-        this.__renderValues(h, item),
-        this.__renderExamples(h, item),
-        this.__renderParams(h, item, level + 1),
-        this.__renderDefinitions(h, item, level + 1),
-        this.__renderScope(h, item, level + 1)
+        this.__renderDesc(h, json),
+        this.__renderValues(h, json),
+        this.__renderExamples(h, json),
+        this.__renderParams(h, json, level + 1),
+        this.__renderDefinitions(h, json, level + 1),
+        this.__renderScope(h, json, level + 1),
+        this.__renderReturns(h, json, level + 1)
       ])
     },
 
@@ -89,10 +130,25 @@ export default Vue.extend({
       }, [
         h('div', {
           staticClass: 'component-api__row--label'
-        }, 'Scope' + (Object.keys(json.scope).length > 1 ? 's' : '')),
+        }, 'Scope'),
         h('div', {
         }, [
           keys.map(key => this.__renderSubitem(h, key, json.scope[key], level))
+        ])
+      ])
+    },
+
+    __renderReturns (h, json, level = 0) {
+      if (json.returns === void 0) return ''
+      return h('div', {
+        staticClass: 'component-api__row--item full-width'
+      }, [
+        h('div', {
+          staticClass: 'component-api__row--label'
+        }, 'Returns'),
+        h('div', {
+        }, [
+          this.__renderSubitem(h, void 0, json.returns, level)
         ])
       ])
     },
@@ -228,7 +284,6 @@ export default Vue.extend({
           h('div', json.addedIn)
         ])
       ])
-
     },
 
     __renderType (h, json) {
@@ -249,6 +304,7 @@ export default Vue.extend({
     },
 
     __renderName (h, name, color) {
+      if (name === void 0) return ''
       return h('div', {
         staticClass: 'component-api__row--item col-grow'
       }, [
@@ -266,11 +322,17 @@ export default Vue.extend({
     },
 
     __render (h) {
+      let name = this.name
+      if (this.type === 'methods') {
+        name = this.getMethodName(name, this.json)
+      } else if (this.type === 'events') {
+        name = this.getEventName(name, this.json)
+      }
       const level = 0
       return h('div', {
         staticClass: 'row full-width'
       }, [
-        this.__renderName(h, this.name, NAME_PROP_COLOR[level]),
+        this.__renderName(h, name, NAME_PROP_COLOR[level]),
         this.__renderType(h, this.json),
         this.__renderAddedIn(h, this.json),
         this.__renderRequired(h, this.json),
@@ -283,7 +345,8 @@ export default Vue.extend({
         this.__renderExamples(h, this.json),
         this.__renderParams(h, this.json, level + 1),
         this.__renderDefinitions(h, this.json, level + 1),
-        this.__renderScope(h, this.json, level + 1)
+        this.__renderScope(h, this.json, level + 1),
+        this.__renderReturns(h, this.json, level + 1)
       ])
     }
   },

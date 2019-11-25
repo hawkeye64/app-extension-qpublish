@@ -148,7 +148,8 @@ export default Vue.extend({
         }, 'Returns'),
         h('div', {
         }, [
-          this.__renderSubitem(h, void 0, json.returns, level)
+          json.returns === null && 'null',
+          json.returns !== null && this.__renderSubitem(h, void 0, json.returns, level)
         ])
       ])
     },
